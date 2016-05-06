@@ -1,6 +1,6 @@
-use std::io::{stdout, stderr,BufRead, BufReader, Write};
+use std::io::{stderr,BufRead, BufReader, Write};
 use std::process::{Command,exit,Stdio};
-use std::sync::mpsc::channel;
+use std::sync::mpsc::{channel, Sender};
 use std::thread;
 
 const OCCUPIED_ICON: &'static str = "";
@@ -16,16 +16,12 @@ const FREE_ICON: &'static str = "";
 // }
 
 // enum Update {
-//     Workspaces(Workspace),
+//     Workspaces(String),
 //     Time(String),
 //     Title(String),
 // }
 
-// workspace_info() -> String {
-
-// }
-
-fn main() {
+fn workspace_info(sender: Sender<String>) {
     let output = match Command::new("bspc").arg("subscribe").arg("report").stdout(Stdio::piped()).spawn() {
         Ok(out) => out,
         Err(_) => {
@@ -36,40 +32,64 @@ fn main() {
 
     let reader = BufReader::new(output.stdout.unwrap());
     for line in reader.lines() {
-        print!("%{{c}}");
-        print!("%{{A4:bspc desktop -f prev:}}%{{A5:bspc desktop -f next:}}");
+        let _ = sender.send(format!("%{{c}}"));
+        let _ = sender.send(format!("%{{A4:bspc desktop -f prev:}}%{{A5:bspc desktop -f next:}}"));
         let line = line.unwrap();
         let line_vector = line.split(":").collect::<Vec<&str>>();
 
         for line in &line_vector {
             let workspace = &line[1..];
 
-            print!("%{{A:bspc desktop -f {}:}}", workspace);
+            let _ = sender.send(format!("%{{A:bspc desktop -f {}:}}", workspace));
 
             match &line[0..1] {
+                // Occupied focused
                 "O" => {
-                    print!("%{{F#FFF6F9FF}} {} %{{F-}}", OCCUPIED_ICON); // Occupied focused
+                    let _ = sender.send(format!("%{{F#FFF6F9FF}} {} %{{F-}}", OCCUPIED_ICON));
                 }
+
+                // Occupied unfocused
                 "o" => {
-                    print!("%{{F#FFA3A6AB}} {} %{{F-}}", OCCUPIED_ICON); // Occupied unfocused
+                    let _ = sender.send(format!("%{{F#FFA3A6AB}} {} %{{F-}}", OCCUPIED_ICON));
                 }
+
+                // Free focused
                 "F" => {
-                    print!("%{{F#FFF6F9FF}} {} %{{F-}}", FREE_ICON); // Free focused
+                    let _ = sender.send(format!("%{{F#FFF6F9FF}} {} %{{F-}}", FREE_ICON));
                 }
+
+                // Free unfocused
                 "f" => {
-                    print!("%{{F#FF6F7277}} {} %{{F-}}", FREE_ICON); // Free unfocused
+                    let _ = sender.send(format!("%{{F#FF6F7277}} {} %{{F-}}", FREE_ICON));
                 }
+
+                // Urgent focused
                 "U" => {
-                    print!("%{{F#FF916255}} {} %{{F-}}", OCCUPIED_ICON); // Urgent focused
+                    let _ = sender.send(format!("%{{F#FF916255}} {} %{{F-}}", OCCUPIED_ICON));
                 }
+
+                // Urgent unfocused
                 "u" => {
-                    print!("%{{F#FF543B3B}} {} %{{F-}}", OCCUPIED_ICON); // Urgent unfocused
+                    let _ = sender.send(format!("%{{F#FF543B3B}} {} %{{F-}}", OCCUPIED_ICON));
                 }
-                _ => {},
+
+                _ => {}
             }
-            print!("%{{A}}");
+            let _ = sender.send(format!("%{{A}}"));
         }
-        print!("%{{A}}%{{A}}");
-        println!("");
+        let _ = sender.send(format!("%{{A}}%{{A}}"));
+        let _ = sender.send(format!("\n"));
+    }
+}
+
+fn main() {
+    let (sender, receiver) = channel::<String>();
+
+    let _ = thread::spawn(move || {
+        workspace_info(sender.clone());
+    });
+
+    for line in receiver.iter() {
+        print!("{}", line);
     }
 }
