@@ -1,3 +1,5 @@
+extern crate chrono;
+
 use std::io::{stderr,BufRead, BufReader, Write};
 use std::process::{Command,exit,Stdio};
 use std::sync::mpsc::{channel, Sender};
@@ -103,18 +105,10 @@ fn title(sender: Sender<Update>) {
 }
 
 fn time(sender: Sender<Update>) {
-    let output = match Command::new("clock").arg("-s").arg("-i").arg("1").arg("-f").arg("%I:%M %p").stdout(Stdio::piped()).spawn() {
-        Ok(out) => out,
-        Err(_) => {
-            let _ = stderr().write("Failed to run 'clock'\n".as_bytes()).unwrap();
-            exit(1);
-        },
-    };
-
-    let reader = BufReader::new(output.stdout.unwrap());
-    for line in reader.lines() {
-        let line = line.unwrap();
-        let _ = sender.send(Update::Time(format!("%{{r}}%{{B#FF665B5B}} {} %{{B-}}", line)));
+    loop {
+        let time = chrono::Local::now().format("%I:%M %p");
+        let _ = sender.send(Update::Time(format!("%{{r}}%{{B#FF665B5B}} {} %{{B-}}", time)));
+        sleep(Duration::from_secs(1));
     }
 }
 
