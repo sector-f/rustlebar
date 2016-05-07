@@ -21,7 +21,7 @@ fn workspace_info(sender: Sender<Update>) {
     let reader = BufReader::new(output.stdout.unwrap());
     for line in reader.lines() {
         let mut message: Vec<String> = Vec::new();
-        message.push(format!(" %{{l}}"));
+        message.push(format!("%{{l}} "));
         message.push(format!("%{{A4:bspc desktop -f prev:}}%{{A5:bspc desktop -f next:}}"));
 
         let line = line.unwrap();
@@ -32,43 +32,43 @@ fn workspace_info(sender: Sender<Update>) {
                 // Occupied focused
                 "O" => {
                     message.push(format!("%{{A:bspc desktop -f {}:}}", &line[1..]));
-                    message.push(format!("%{{F#FFF6F9FF}} {}%{{F-}}", OCCUPIED_ICON));
-                    message.push(format!("%{{A}}"));
+                    message.push(format!("%{{F#FFF6F9FF}}{}%{{F-}}", OCCUPIED_ICON));
+                    message.push(format!("%{{A}} "));
                 }
 
                 // Occupied unfocused
                 "o" => {
                     message.push(format!("%{{A:bspc desktop -f {}:}}", &line[1..]));
-                    message.push(format!("%{{F#FFA3A6AB}} {}%{{F-}}", OCCUPIED_ICON));
-                    message.push(format!("%{{A}}"));
+                    message.push(format!("%{{F#FFA3A6AB}}{}%{{F-}}", OCCUPIED_ICON));
+                    message.push(format!("%{{A}} "));
                 }
 
                 // Free focused
                 "F" => {
                     message.push(format!("%{{A:bspc desktop -f {}:}}", &line[1..]));
-                    message.push(format!("%{{F#FFF6F9FF}} {}%{{F-}}", FREE_ICON));
-                    message.push(format!("%{{A}}"));
+                    message.push(format!("%{{F#FFF6F9FF}}{}%{{F-}}", FREE_ICON));
+                    message.push(format!("%{{A}} "));
                 }
 
                 // Free unfocused
                 "f" => {
                     message.push(format!("%{{A:bspc desktop -f {}:}}", &line[1..]));
-                    message.push(format!("%{{F#FF6F7277}} {}%{{F-}}", FREE_ICON));
-                    message.push(format!("%{{A}}"));
+                    message.push(format!("%{{F#FF6F7277}}{}%{{F-}}", FREE_ICON));
+                    message.push(format!("%{{A}} "));
                 }
 
                 // Urgent focused
                 "U" => {
                     message.push(format!("%{{A:bspc desktop -f {}:}}", &line[1..]));
-                    message.push(format!("%{{F#FF916255}} {}%{{F-}}", OCCUPIED_ICON));
-                    message.push(format!("%{{A}}"));
+                    message.push(format!("%{{F#FF916255}}{}%{{F-}}", OCCUPIED_ICON));
+                    message.push(format!("%{{A}} "));
                 }
 
                 // Urgent unfocused
                 "u" => {
                     message.push(format!("%{{A:bspc desktop -f {}:}}", &line[1..]));
-                    message.push(format!("%{{F#FF543B3B}} {}%{{F-}}", OCCUPIED_ICON));
-                    message.push(format!("%{{A}}"));
+                    message.push(format!("%{{F#FF543B3B}}{}%{{F-}}", OCCUPIED_ICON));
+                    message.push(format!("%{{A}} "));
                 }
 
                 _ => {}
