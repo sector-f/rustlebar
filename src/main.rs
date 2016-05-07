@@ -1,7 +1,7 @@
 extern crate chrono;
 
-use std::io::{stderr,BufRead, BufReader, Write};
-use std::process::{Command,exit,Stdio};
+use std::io::{BufRead, BufReader};
+use std::process::{Command, Stdio};
 use std::sync::mpsc::{channel, Sender};
 use std::thread::{self, sleep};
 use std::time::Duration;
@@ -16,15 +16,7 @@ enum Update {
 }
 
 fn workspace_info(sender: Sender<Update>) {
-    // let mut old_message: Vec<String> = vec!["".to_owned()];
-
-    let output = match Command::new("bspc").arg("subscribe").arg("report").stdout(Stdio::piped()).spawn() {
-        Ok(out) => out,
-        Err(_) => {
-            let _ = stderr().write("Failed to run 'bspc'\n".as_bytes()).unwrap();
-            exit(1);
-        },
-    };
+    let output = Command::new("bspc").arg("subscribe").arg("report").stdout(Stdio::piped()).spawn().unwrap();
 
     let reader = BufReader::new(output.stdout.unwrap());
     for line in reader.lines() {
@@ -89,13 +81,7 @@ fn workspace_info(sender: Sender<Update>) {
 }
 
 fn title(sender: Sender<Update>) {
-    let output = match Command::new("xtitle").arg("-s").arg("-i").arg("-t").arg("100").stdout(Stdio::piped()).spawn() {
-        Ok(out) => out,
-        Err(_) => {
-            let _ = stderr().write("Failed to run 'xtitle'\n".as_bytes()).unwrap();
-            exit(1);
-        },
-    };
+    let output = Command::new("xtitle").arg("-s").arg("-i").arg("-t").arg("100").stdout(Stdio::piped()).spawn().unwrap();
 
     let reader = BufReader::new(output.stdout.unwrap());
     for line in reader.lines() {
