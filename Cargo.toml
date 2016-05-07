@@ -1,5 +1,5 @@
 [package]
-name = "lemonstatus"
+name = "rustlebar"
 version = "0.1.0"
 authors = ["Adam <adamsimeth@gmail.com>"]
 
