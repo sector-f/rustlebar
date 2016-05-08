@@ -16,19 +16,9 @@ pub struct Icons {
 
 fn get_config_path() -> Option<String> {
     if let Ok(value) = var("XDG_CONFIG_HOME") {
-        let path = value + &path::MAIN_SEPARATOR.to_string() + "rustlebar.toml";
-        if File::open(&path).is_ok() {
-            Some(path)
-        } else {
-            None
-        }
+        Some(value + &path::MAIN_SEPARATOR.to_string() + "rustlebar.toml")
     } else if let Ok(value) = var("HOME") {
-        let path = value + &path::MAIN_SEPARATOR.to_string() + ".config" + &path::MAIN_SEPARATOR.to_string() + "rustlebar.toml";
-        if File::open(&path).is_ok() {
-            Some(path)
-        } else {
-            None
-        }
+        Some(value + &path::MAIN_SEPARATOR.to_string() + ".config" + &path::MAIN_SEPARATOR.to_string() + "rustlebar.toml")
     } else {
         None
     }
@@ -56,17 +46,17 @@ pub fn get_icons() -> Icons {
     let mut buffer = String::new();
 
     if let Some(path) = get_config_path() {
-        let mut file = File::open(&path).unwrap();
-        let _ = file.read_to_string(&mut buffer);
-        let configuration: toml::Value = buffer.parse().unwrap();
+        if let Ok(mut file) = File::open(&path) {
+            let _ = file.read_to_string(&mut buffer);
+            let configuration: toml::Value = buffer.parse().unwrap();
 
-        occupied_focused = get_value(&configuration, &occupied_focused, "icons.occupied_focused");
-        occupied_unfocused = get_value(&configuration, &occupied_unfocused, "icons.occupied_unfocused");
-        free_focused = get_value(&configuration, &free_focused, "icons.free_focused");
-        free_unfocused = get_value(&configuration, &free_unfocused, "icons.free_unfocused");
-        urgent_focused = get_value(&configuration, &urgent_focused, "icons.urgent_focused");
-        urgent_unfocused = get_value(&configuration, &urgent_unfocused, "icons.urgent_unfocused");
-
+            occupied_focused = get_value(&configuration, &occupied_focused, "icons.occupied_focused");
+            occupied_unfocused = get_value(&configuration, &occupied_unfocused, "icons.occupied_unfocused");
+            free_focused = get_value(&configuration, &free_focused, "icons.free_focused");
+            free_unfocused = get_value(&configuration, &free_unfocused, "icons.free_unfocused");
+            urgent_focused = get_value(&configuration, &urgent_focused, "icons.urgent_focused");
+            urgent_unfocused = get_value(&configuration, &urgent_unfocused, "icons.urgent_unfocused");
+        }
     }
 
     Icons {
