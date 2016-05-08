@@ -5,3 +5,4 @@ authors = ["Adam <adamsimeth@gmail.com>"]
 
 [dependencies]
 chrono = "0.2.22"
+toml = "0.1.*"
