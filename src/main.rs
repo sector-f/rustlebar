@@ -61,7 +61,7 @@ fn workspace_info(sender: Sender<Update>) {
                 // Urgent focused
                 "U" => {
                     message.push(format!("%{{A:bspc desktop -f {}:}}", &line[1..]));
-                    message.push(format!("%{{F#FF916255}}{}%{{F-}}", icons.urgent_unfocused));
+                    message.push(format!("%{{F#FF916255}}{}%{{F-}}", icons.urgent_focused));
                     message.push(format!("%{{A}} "));
                 }
 
