@@ -15,17 +15,17 @@ enum Update {
 }
 
 fn workspace_info(sender: Sender<Update>) {
-    let output = Command::new("bspc").arg("subscribe").arg("report").stdout(Stdio::piped()).spawn().unwrap();
+    let output = Command::new("bspc").args(&["subscribe", "report"]).stdout(Stdio::piped()).spawn().expect("Failed to run bspc");
 
     let icons: configuration::Icons = configuration::get_icons();
 
-    let reader = BufReader::new(output.stdout.unwrap());
+    let reader = BufReader::new(output.stdout.expect("Failed to read stdout of bspc"));
     for line in reader.lines() {
         let mut message: Vec<String> = Vec::new();
-        message.push(format!("%{{l}} "));
-        message.push(format!("%{{A4:bspc desktop -f prev:}}%{{A5:bspc desktop -f next:}}"));
+        message.push("%{l} ".to_owned());
+        message.push("%{A4:bspc desktop -f prev:}%{A5:bspc desktop -f next:}".to_owned());
 
-        let line = line.unwrap();
+        let line = line.expect("Failed to read line from bspc");
         let line_vector = line.split(":").collect::<Vec<&str>>();
 
         for line in &line_vector {
@@ -34,59 +34,59 @@ fn workspace_info(sender: Sender<Update>) {
                 "O" => {
                     message.push(format!("%{{A:bspc desktop -f {}:}}", &line[1..]));
                     message.push(format!("%{{F#FFF6F9FF}}{}%{{F-}}", icons.occupied_focused));
-                    message.push(format!("%{{A}} "));
+                    message.push("%{A} ".to_owned());
                 }
 
                 // Occupied unfocused
                 "o" => {
                     message.push(format!("%{{A:bspc desktop -f {}:}}", &line[1..]));
                     message.push(format!("%{{F#FFA3A6AB}}{}%{{F-}}", icons.occupied_unfocused));
-                    message.push(format!("%{{A}} "));
+                    message.push("%{A} ".to_owned());
                 }
 
                 // Free focused
                 "F" => {
                     message.push(format!("%{{A:bspc desktop -f {}:}}", &line[1..]));
                     message.push(format!("%{{F#FFF6F9FF}}{}%{{F-}}", icons.free_focused));
-                    message.push(format!("%{{A}} "));
+                    message.push("%{A} ".to_owned());
                 }
 
                 // Free unfocused
                 "f" => {
                     message.push(format!("%{{A:bspc desktop -f {}:}}", &line[1..]));
                     message.push(format!("%{{F#FF6F7277}}{}%{{F-}}", icons.free_unfocused));
-                    message.push(format!("%{{A}} "));
+                    message.push("%{A} ".to_owned());
                 }
 
                 // Urgent focused
                 "U" => {
                     message.push(format!("%{{A:bspc desktop -f {}:}}", &line[1..]));
                     message.push(format!("%{{F#FF916255}}{}%{{F-}}", icons.urgent_focused));
-                    message.push(format!("%{{A}} "));
+                    message.push("%{A} ".to_owned());
                 }
 
                 // Urgent unfocused
                 "u" => {
                     message.push(format!("%{{A:bspc desktop -f {}:}}", &line[1..]));
                     message.push(format!("%{{F#FF543B3B}}{}%{{F-}}", icons.urgent_unfocused));
-                    message.push(format!("%{{A}} "));
+                    message.push("%{A} ".to_owned());
                 }
 
                 _ => {}
             }
         }
-        message.push(format!("%{{A}}%{{A}}"));
+        message.push("%{A}%{A}".to_owned());
 
         let _ = sender.send(Update::Workspaces(message.join("")));
     }
 }
 
 fn title(sender: Sender<Update>) {
-    let output = Command::new("xtitle").arg("-s").arg("-i").arg("-t").arg("100").stdout(Stdio::piped()).spawn().unwrap();
+    let output = Command::new("xtitle").args(&["-s", "-i", "-t", "100"]).stdout(Stdio::piped()).spawn().expect("Failed to run xtitle");
 
-    let reader = BufReader::new(output.stdout.unwrap());
+    let reader = BufReader::new(output.stdout.expect("Failed to read stdout of xtitle"));
     for line in reader.lines() {
-        let line = line.unwrap();
+        let line = line.expect("Failed to read line from xtitle");
         let _ = sender.send(Update::Title(format!("%{{c}}{}", line)));
     }
 }
@@ -101,26 +101,16 @@ fn time(sender: Sender<Update>) {
 
 fn main() {
     let (sender, receiver) = channel::<Update>();
+    let (sender_clone1, sender_clone2, sender_clone3) = (sender.clone(), sender.clone(), sender.clone());
 
-    let mut workspace_message: String = "".to_owned();
-    let mut title_message: String = "".to_owned();
-    let mut time_message: String = "".to_owned();
-    let mut message: String = "".to_owned();
+    let mut workspace_message = String::new();
+    let mut title_message = String::new();
+    let mut time_message = String::new();
+    let mut message = String::new();
 
-    let sender_clone = sender.clone();
-    let _ = thread::spawn(move || {
-        workspace_info(sender_clone);
-    });
-
-    let sender_clone = sender.clone();
-    let _ = thread::spawn(move || {
-        title(sender_clone);
-    });
-
-    let sender_clone = sender.clone();
-    let _ = thread::spawn(move || {
-        time(sender_clone);
-    });
+    let _ = thread::spawn(move || { workspace_info(sender_clone1); });
+    let _ = thread::spawn(move || { title(sender_clone2); });
+    let _ = thread::spawn(move || { time(sender_clone3); });
 
     for line in receiver.iter() {
         match line {
