@@ -18,6 +18,7 @@ fn workspace_info(sender: Sender<Update>) {
     let output = Command::new("bspc").args(&["subscribe", "report"]).stdout(Stdio::piped()).spawn().expect("Failed to run bspc");
 
     let icons: configuration::Icons = configuration::get_icons();
+    let colors: configuration::Colors = configuration::get_colors();
 
     let reader = BufReader::new(output.stdout.expect("Failed to read stdout of bspc"));
     for line in reader.lines() {
@@ -33,42 +34,42 @@ fn workspace_info(sender: Sender<Update>) {
                 // Occupied focused
                 "O" => {
                     message.push(format!("%{{A:bspc desktop -f {}:}}", &line[1..]));
-                    message.push(format!("%{{F#FFF6F9FF}}{}%{{F-}}", icons.occupied_focused));
+                    message.push(format!("%{{F{}}}{}%{{F-}}", colors.occupied_focused, icons.occupied_focused));
                     message.push("%{A} ".to_owned());
                 }
 
                 // Occupied unfocused
                 "o" => {
                     message.push(format!("%{{A:bspc desktop -f {}:}}", &line[1..]));
-                    message.push(format!("%{{F#FFA3A6AB}}{}%{{F-}}", icons.occupied_unfocused));
+                    message.push(format!("%{{F{}}}{}%{{F-}}", colors.occupied_unfocused, icons.occupied_unfocused));
                     message.push("%{A} ".to_owned());
                 }
 
                 // Free focused
                 "F" => {
                     message.push(format!("%{{A:bspc desktop -f {}:}}", &line[1..]));
-                    message.push(format!("%{{F#FFF6F9FF}}{}%{{F-}}", icons.free_focused));
+                    message.push(format!("%{{F{}}}{}%{{F-}}", colors.free_focused, icons.free_focused));
                     message.push("%{A} ".to_owned());
                 }
 
                 // Free unfocused
                 "f" => {
                     message.push(format!("%{{A:bspc desktop -f {}:}}", &line[1..]));
-                    message.push(format!("%{{F#FF6F7277}}{}%{{F-}}", icons.free_unfocused));
+                    message.push(format!("%{{F{}}}{}%{{F-}}", colors.free_unfocused, icons.free_unfocused));
                     message.push("%{A} ".to_owned());
                 }
 
                 // Urgent focused
                 "U" => {
                     message.push(format!("%{{A:bspc desktop -f {}:}}", &line[1..]));
-                    message.push(format!("%{{F#FF916255}}{}%{{F-}}", icons.urgent_focused));
+                    message.push(format!("%{{F{}}}{}%{{F-}}", colors.urgent_focused, icons.urgent_focused));
                     message.push("%{A} ".to_owned());
                 }
 
                 // Urgent unfocused
                 "u" => {
                     message.push(format!("%{{A:bspc desktop -f {}:}}", &line[1..]));
-                    message.push(format!("%{{F#FF543B3B}}{}%{{F-}}", icons.urgent_unfocused));
+                    message.push(format!("%{{F{}}}{}%{{F-}}", colors.urgent_unfocused, icons.urgent_unfocused));
                     message.push("%{A} ".to_owned());
                 }
 

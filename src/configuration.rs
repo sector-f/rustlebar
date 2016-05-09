@@ -14,6 +14,15 @@ pub struct Icons {
     pub urgent_unfocused: String,
 }
 
+pub struct Colors {
+    pub occupied_focused: String,
+    pub occupied_unfocused: String,
+    pub free_focused: String,
+    pub free_unfocused: String,
+    pub urgent_focused: String,
+    pub urgent_unfocused: String,
+}
+
 fn if_readable(path: PathBuf) -> Option<PathBuf> { if path.exists() { Some(path) } else { None } }
 
 fn get_config_path() -> Option<PathBuf> {
@@ -50,5 +59,24 @@ pub fn get_icons() -> Icons {
         free_unfocused: get_value(&configuration, "", "icons.free_unfocused"),
         urgent_focused: get_value(&configuration, "", "icons.urgent_focused"),
         urgent_unfocused: get_value(&configuration, "", "icons.urgent_unfocused"),
+    }
+}
+
+pub fn get_colors() -> Colors {
+    let mut buffer = String::new();
+
+    if let Some(mut f) = get_config_path().and_then(|p| File::open(p).ok()) {
+        f.read_to_string(&mut buffer).expect("Can't read configuration file");
+    }
+
+    let configuration: toml::Value = buffer.parse().unwrap_or(toml::Value::Array(Vec::new()));
+
+    Colors {
+        occupied_focused: get_value(&configuration, "#FFF6F9FF", "colors.occupied_focused"),
+        occupied_unfocused: get_value(&configuration, "#FFA3A6AB", "colors.occupied_unfocused"),
+        free_focused: get_value(&configuration, "#FFF6F9FF", "colors.free_focused"),
+        free_unfocused: get_value(&configuration, "#FF6F7277", "colors.free_unfocused"),
+        urgent_focused: get_value(&configuration, "#FF916255", "colors.urgent_focused"),
+        urgent_unfocused: get_value(&configuration, "#FF543B3B", "colors.urgent_unfocused"),
     }
 }
