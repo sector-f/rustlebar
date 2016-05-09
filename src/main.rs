@@ -82,8 +82,8 @@ fn workspace_info(sender: Sender<Update>) {
     }
 }
 
-fn title(sender: Sender<Update>) {
-    let output = Command::new("xtitle").args(&["-s", "-i", "-t", "100"]).stdout(Stdio::piped()).spawn().expect("Failed to run xtitle");
+fn title(sender: Sender<Update>, length: &str) {
+    let output = Command::new("xtitle").args(&["-s", "-i", "-t", length]).stdout(Stdio::piped()).spawn().expect("Failed to run xtitle");
 
     let reader = BufReader::new(output.stdout.expect("Failed to read stdout of xtitle"));
     for line in reader.lines() {
@@ -104,14 +104,14 @@ fn main() {
     let lemonbar_options = configuration::get_lemonbar_options();
 
     let lemonbar = match Command::new("lemonbar")
-        .arg("-g").arg(format!("{}x{}+{}+{}", lemonbar_options.width,
-                                              lemonbar_options.height,
-                                              lemonbar_options.x,
-                                              lemonbar_options.y))
-        .arg("-a").arg(lemonbar_options.clickable_areas)
-        .arg("-f").arg(lemonbar_options.text_font)
-        .arg("-f").arg(lemonbar_options.icon_font)
-        .arg("-B").arg(lemonbar_options.background_color)
+        .arg("-g").arg(format!("{}x{}+{}+{}", &lemonbar_options.width,
+                                              &lemonbar_options.height,
+                                              &lemonbar_options.x,
+                                              &lemonbar_options.y))
+        .arg("-a").arg(&lemonbar_options.clickable_areas)
+        .arg("-f").arg(&lemonbar_options.text_font)
+        .arg("-f").arg(&lemonbar_options.icon_font)
+        .arg("-B").arg(&lemonbar_options.background_color)
         .stdin(Stdio::piped())
         .spawn() {
         Ok(bar) => bar,
@@ -132,7 +132,7 @@ fn main() {
     let mut message = String::new();
 
     let _ = thread::spawn(move || { workspace_info(sender_clone1); });
-    let _ = thread::spawn(move || { title(sender_clone2); });
+    let _ = thread::spawn(move || { title(sender_clone2, &lemonbar_options.title_length); });
     let _ = thread::spawn(move || { time(sender_clone3); });
 
     for line in receiver.iter() {

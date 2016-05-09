@@ -30,6 +30,7 @@ pub struct LemonbarOptions {
     pub y: String,
     pub text_font: String,
     pub icon_font: String,
+    pub title_length: String,
     pub background_color: String,
     pub clickable_areas: String,
 }
@@ -108,6 +109,7 @@ pub fn get_lemonbar_options() -> LemonbarOptions {
         y: get_value(&configuration, "0", "lemonbar.y"),
         text_font: get_value(&configuration, "DejaVu Sans Mono-13", "lemonbar.text_font"),
         icon_font: get_value(&configuration, "FontAwesome-15", "lemonbar.icon_font"),
+        title_length: get_value(&configuration, "100", "lemonbar.title_length"),
         background_color: get_value(&configuration, "#141314", "lemonbar.background"),
         clickable_areas: get_value(&configuration, "30", "lemonbar.clickable"),
     }
