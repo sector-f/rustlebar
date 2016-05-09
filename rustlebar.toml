@@ -13,3 +13,13 @@ free_focused = "#FFF6F9FF"
 free_unfocused = "#FF6F7277"
 urgent_focused = "#FF916255"
 urgent_unfocused = "#FF543B3B"
+
+[lemonbar]
+width = "1920"
+height = "30"
+x = "0"
+y = "0"
+text_font = "DejaVu Sans Mono-13"
+icon_font = "FontAwesome-15"
+background_color = "#141314"
+clickable_areas = "30"

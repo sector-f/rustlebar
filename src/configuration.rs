@@ -23,6 +23,17 @@ pub struct Colors {
     pub urgent_unfocused: String,
 }
 
+pub struct LemonbarOptions {
+    pub width: String,
+    pub height: String,
+    pub x: String,
+    pub y: String,
+    pub text_font: String,
+    pub icon_font: String,
+    pub background_color: String,
+    pub clickable_areas: String,
+}
+
 fn if_readable(path: PathBuf) -> Option<PathBuf> { if path.exists() { Some(path) } else { None } }
 
 fn get_config_path() -> Option<PathBuf> {
@@ -78,5 +89,26 @@ pub fn get_colors() -> Colors {
         free_unfocused: get_value(&configuration, "#FF6F7277", "colors.free_unfocused"),
         urgent_focused: get_value(&configuration, "#FF916255", "colors.urgent_focused"),
         urgent_unfocused: get_value(&configuration, "#FF543B3B", "colors.urgent_unfocused"),
+    }
+}
+
+pub fn get_lemonbar_options() -> LemonbarOptions {
+    let mut buffer = String::new();
+
+    if let Some(mut f) = get_config_path().and_then(|p| File::open(p).ok()) {
+        f.read_to_string(&mut buffer).expect("Can't read configuration file");
+    }
+
+    let configuration: toml::Value = buffer.parse().unwrap_or(toml::Value::Array(Vec::new()));
+
+    LemonbarOptions {
+        width: get_value(&configuration, "1920", "lemonbar.width"),
+        height: get_value(&configuration, "30", "lemonbar.height"),
+        x: get_value(&configuration, "0", "lemonbar.x"),
+        y: get_value(&configuration, "0", "lemonbar.y"),
+        text_font: get_value(&configuration, "DejaVu Sans Mono-13", "lemonbar.text_font"),
+        icon_font: get_value(&configuration, "FontAwesome-15", "lemonbar.icon_font"),
+        background_color: get_value(&configuration, "#141314", "lemonbar.background"),
+        clickable_areas: get_value(&configuration, "30", "lemonbar.clickable"),
     }
 }
