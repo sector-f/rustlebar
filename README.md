@@ -19,3 +19,5 @@ urgent_unfocused = "u"
 ````
 
 Note that the values shown above are *not* the default values; the default values are U+F111 ("" ) for occupied desktops and  U+F10C ("") for unoccupied desktops. Those probably won't show up on this page, but they are a [solid circle](http://fortawesome.github.io/Font-Awesome/icon/circle/) and a [hollow circle](http://fortawesome.github.io/Font-Awesome/icon/circle-o/) in Font Awesome.
+
+The `rustlebar.toml` file in this repository contains the default values for all available options.

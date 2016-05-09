@@ -1,0 +1,15 @@
+[icons]
+occupied_focused = ""
+occupied_unfocused = ""
+free_focused = ""
+free_unfocused = ""
+urgent_focused = ""
+urgent_unfocused = ""
+
+[colors]
+occupied_focused = "#FFF6F9FF"
+occupied_unfocused = "#FFA3A6AB"
+free_focused = "#FFF6F9FF"
+free_unfocused = "#FF6F7277"
+urgent_focused = "#FF916255"
+urgent_unfocused = "#FF543B3B"
