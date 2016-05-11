@@ -94,7 +94,7 @@ fn title(sender: Sender<Update>, length: &str) {
 
 fn time(sender: Sender<Update>) {
     loop {
-        let time = chrono::Local::now().format("%I:%M %p");
+        let time = chrono::Local::now().format("%-I:%M %p");
         let _ = sender.send(Update::Time(format!("%{{r}}%{{B#FF665B5B}} {} %{{B-}}", time)));
         sleep(Duration::from_secs(1));
     }
@@ -154,7 +154,6 @@ fn main() {
             message = workspace_message.to_owned() + &title_message + &time_message;
             sleep(Duration::from_millis(5));
             let _ = lemonbar_stdin.write(format!("{}\n", message).as_bytes()).unwrap();
-            // println!("{}", message);
         }
     }
 }
